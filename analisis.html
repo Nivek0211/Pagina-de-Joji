@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Análisis y Significado — Joji</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── MISMOS ESTILOS BASE PARA MANTENER LA IDENTIDAD ── */
+    :root {
+      --gold:    #c9a84c;
+      --gold-bg: #f5e9c8;
+      --pale:    #ede0b5;
+      --ink:     #1a1a18;
+      --red:     #9e1b1b;
+      --red-lt:  #c42020;
+      --muted:   #8a7e5a;
+      --shadow:  rgba(26,26,24,0.14);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--gold-bg);
+      color: var(--ink);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 999; opacity: 0.45;
+    }
+
+    /* ── MENÚ DE NAVEGACIÓN ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(26, 26, 24, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 3rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    nav.scrolled .nav-logo, nav.scrolled .nav-links a { color: var(--gold-bg); }
+    nav.scrolled .nav-logo:hover, nav.scrolled .nav-links a:hover { color: var(--red-lt); }
+    
+    .nav-logo {
+      font-family: 'Bodoni Moda', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold-bg); text-decoration: none; transition: color 0.3s ease;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none; color: var(--gold-bg); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.3s;
+    }
+    .nav-links a.highlight { font-weight: 700; color: var(--red-lt); border-bottom: 1px solid var(--red-lt); padding-bottom: 2px; }
+
+    /* ── BOTÓN VOLVER ARRIBA ── */
+    #btn-top {
+      position: fixed; bottom: 2rem; right: 2rem; width: 45px; height: 45px; background: var(--red); color: var(--gold-bg); border: none; border-radius: 50%; font-size: 1.2rem; cursor: pointer; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; z-index: 1000; box-shadow: 0 4px 15px rgba(158,27,27,0.4); display: flex; align-items: center; justify-content: center;
+    }
+    #btn-top.show { opacity: 1; visibility: visible; }
+    #btn-top:hover { transform: translateY(-5px); background: var(--red-lt); }
+
+    /* ── HERO SECTION EDITORIAL ── */
+    .hero-article {
+      background: var(--ink);
+      color: var(--gold-bg);
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+    }
+    .hero-article::after { content: ''; position: absolute; bottom: 0; left: 10%; width: 80%; height: 1px; background: linear-gradient(to right, transparent, var(--red), transparent); }
+    .hero-tag { font-size: 0.62rem; letter-spacing: 0.3em; color: var(--red-lt); text-transform: uppercase; margin-bottom: 1.5rem; }
+    .hero-title { font-family: 'Bodoni Moda', serif; font-size: clamp(3rem, 7vw, 6rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+    .hero-desc { font-size: 0.85rem; color: rgba(245,233,200,0.7); max-width: 600px; line-height: 1.8; }
+
+    /* ── CUERPO DEL ARTÍCULO ── */
+    .article-section { max-width: 900px; margin: 0 auto; padding: 5rem 2rem; }
+    .text-block { margin-bottom: 4rem; }
+    .text-block h2 { font-family: 'Bodoni Moda', serif; font-size: 2.2rem; color: var(--red); margin-bottom: 1.5rem; }
+    .text-block p { font-size: 0.85rem; line-height: 2; color: #3d3a28; margin-bottom: 1.5rem; text-align: justify; }
+    
+    .highlight-quote {
+      border-left: 3px solid var(--red);
+      padding-left: 2rem;
+      margin: 3rem 0;
+      font-family: 'Bodoni Moda', serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+
+    /* ── ANÁLISIS DE CANCIONES (TARJETAS) ── */
+    .analysis-grid { display: flex; flex-direction: column; gap: 3rem; margin-top: 2rem; }
+    .analysis-card {
+      background: var(--pale);
+      border: 1px solid rgba(26,26,24,0.1);
+      padding: 3rem;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .analysis-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px var(--shadow); border-color: var(--gold); }
+    
+    /* ESTILOS DE LA MINIATURA DE YOUTUBE */
+    .song-thumbnail {
+      position: absolute;
+      top: 2.5rem;
+      right: 2.5rem;
+      width: 75px;
+      height: 75px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(158,27,27,0.3);
+      box-shadow: 0 8px 20px var(--shadow);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      z-index: 2;
+    }
+    .song-thumbnail:hover {
+      transform: scale(1.1) rotate(4deg);
+      border-color: var(--red);
+    }
+    .song-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .song-title { font-family: 'Bodoni Moda', serif; font-size: 2rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; max-width: 80%; }
+    .song-meta { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 1.5rem; }
+    .song-analysis { font-size: 0.8rem; line-height: 1.9; color: #4a4734; }
+    
+    /* ── CALL TO ACTION REGRESO ── */
+    .cta-return { text-align: center; padding: 4rem 2rem 6rem; }
+    .btn-return {
+      display: inline-flex; align-items: center; gap: 1rem; padding: 1.2rem 3rem; background: transparent; color: var(--ink); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; border: 1px solid var(--ink); transition: all 0.3s ease;
+    }
+    .btn-return:hover { background: var(--ink); color: var(--gold-bg); }
+
+    footer { background: #111110; color: var(--muted); text-align: center; padding: 3rem 2rem; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; }
+
+    @media (max-width: 768px) {
+      .hero-article { padding: 8rem 1.5rem 3rem; }
+      nav { padding: 1.5rem; flex-direction: column; gap: 1rem; background: var(--ink); }
+      .highlight-quote { font-size: 1.4rem; padding-left: 1rem; }
+      
+      /* Ajuste de las tarjetas en celular para que la imagen no estorbe */
+      .analysis-card { padding: 5rem 1.5rem 2rem; }
+      .song-thumbnail { top: 1.5rem; right: 1.5rem; width: 55px; height: 55px; }
+      .song-title { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER FIJO -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">JOJI.</a>
+  <div class="nav-links">
+    <a href="index.html">Inicio</a>
+    <a href="index.html#bio">Biografía</a>
+    <a href="index.html#discografia">Discografía</a>
+    <a href="#" class="highlight">Análisis & Significado</a>
+  </div>
+</nav>
+
+<!-- CABECERA DEL ARTÍCULO -->
+<header class="hero-article">
+  <p class="hero-tag">Análisis Profundo</p>
+  <h1 class="hero-title">La Metamorfosis<br>de George Miller</h1>
+  <p class="hero-desc">El dolor crónico, la presión del internet y cómo la destrucción del personaje más tóxico de YouTube dio a luz a una de las voces más vulnerables de nuestra generación.</p>
+</header>
+
+<main class="article-section">
+  
+  <!-- SECCIÓN: LA TRANSICIÓN -->
+  <div class="text-block">
+    <h2>Matar a Filthy Frank para Salvar a George</h2>
+    <p>La historia de Joji no se puede entender sin mirar la oscuridad que dejó atrás. Durante años, George Miller cargó con el peso de <strong>Filthy Frank</strong> y <strong>Pink Guy</strong>. Lo que empezó como sátira y humor absurdo se convirtió en una carga insostenible. Miller sufría de problemas neurológicos graves; el estrés de mantener el canal y forzar su voz le provocaba convulsiones inducidas por el estrés.</p>
+    <p>En diciembre de 2017, la decisión fue definitiva: detuvo la comedia para preservar su salud mental y física. La transición hacia <em>Joji</em> no fue solo un cambio de nombre, fue un acto de supervivencia. Joji le permitió quitarse la máscara estridente y mostrar la melancolía que siempre había estado escondida detrás del sarcasmo.</p>
+    
+    <div class="highlight-quote">
+      "La música de Joji es lo que queda cuando apagas la cámara, te quitas el disfraz y te quedas solo en una habitación a las 3 de la mañana."
+    </div>
+  </div>
+
+  <!-- SECCIÓN: ANÁLISIS DE CANCIONES -->
+  <div class="text-block">
+    <h2>Anatomía del Desamor: Significado de sus Canciones</h2>
+    <p>La música de Joji explora un territorio muy específico: el duelo de las relaciones, el autosabotaje y la incapacidad de avanzar. Aquí desglosamos tres de sus obras más importantes.</p>
+
+    <div class="analysis-grid">
+      
+      <!-- CANCIÓN 1 Slow Dancing in the Dark -->
+      <div class="analysis-card">
+        <!-- ENLACE E IMAGEN DE YOUTUBE EN LA ESQUINA -->
+        <a href="https://www.youtube.com/watch?v=K3Qzzggn--s" target="_blank" class="song-thumbnail" title="Ver video oficial en YouTube">
+          <img src="https://i.ytimg.com/vi/K3Qzzggn--s/maxresdefault.jpg" alt="Slow Dancing in the Dark Thumbnail">
+        </a>
+        
+        <h3 class="song-title">Slow Dancing in the Dark</h3>
+        <p class="song-meta">Ballads 1 · 2018</p>
+        <p class="song-analysis"><strong>El significado:</strong> Es la aceptación de una relación que está condenada al fracaso. Joji sabe que no es suficiente para la otra persona (<em>"You should be with him, I can't compete"</em>), pero al mismo tiempo, el título sugiere que prefiere ignorar la realidad un poco más. "Bailar lentamente en la oscuridad" es una metáfora de cerrar los ojos ante el final inminente para disfrutar de los últimos segundos de cercanía antes de que la luz revele que todo terminó.</p>
+      </div>
+
+      <!-- CANCIÓN 2: Glimpse of Us -->
+      <div class="analysis-card">
+        <!-- ENLACE E IMAGEN DE YOUTUBE EN LA ESQUINA -->
+        <a href="https://youtu.be/FvOpPeKSf_4" target="_blank" class="song-thumbnail" title="Ver video oficial en YouTube">
+          <img src="https://imgs.search.brave.com/Aq9P0eXS0Ibp72cJqwT6AF3DmgpCkhSOlGpGgADdJBk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmRp/c2NvZ3MuY29tL2R6/Y2VFZzgyR1d2MzRo/dG1SdDhFdDVCakRX/TFZ6MDBBOHRzN0dR/dkZfd1UvcnM6Zml0/L2c6c20vcTo0MC9o/OjMwMC93OjMwMC9j/ek02THk5a2FYTmpi/MmR6L0xXUmhkR0Zp/WVhObExXbHQvWVdk/bGN5OVNMVEkyTkRn/NC9NalV3TFRFMk9E/QTVOamd5L05EZ3RN/VFl3Tnk1cWNHVm4u/anBlZw" alt="Glimpse of Us Thumbnail">
+        </a>
+
+        <h3 class="song-title">Glimpse of Us</h3>
+        <p class="song-meta">Smithereens · 2022</p>
+        <p class="song-analysis"><strong>El significado:</strong> Una de las canciones más crueles sobre el desamor. Joji canta desde la perspectiva de alguien que está en una relación perfecta y sana actualmente, pero hay un problema: sigue buscando a su ex en los ojos de su nueva pareja. Es una confesión de culpa y dolor. Trata sobre la tragedia de saber que tu nueva pareja hace todo bien, pero tu corazón sigue atrapado en el "vistazo" (glimpse) de un amor pasado que no puedes soltar.</p>
+      </div>
+
+      <!-- CANCIÓN 3 Sanctuary -->
+      <div class="analysis-card">
+        <!-- ENLACE E IMAGEN DE YOUTUBE EN LA ESQUINA -->
+        <a href="https://youtu.be/YWN81V7ojOE" target="_blank" class="song-thumbnail" title="Ver video oficial en YouTube">
+          <img src="https://imgs.search.brave.com/CaTNEmMOp_C9rSXh5m7aPMhzJpO7F2lK_wg4mmjcc5c/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1QllUTTJORGMy/TVRFdFpHUTNZUzAw/TURsa0xXRmtZVFl0/TVRnME9HRTNaV0ky/TVRKbFhrRXlYa0Zx/Y0djQC5qcGc" alt="Sanctuary Thumbnail">
+        </a>
+
+        <h3 class="song-title">Sanctuary</h3>
+        <p class="song-meta">Nectar · 2020</p>
+        <p class="song-analysis"><strong>El significado:</strong> En contraste con sus temas más oscuros, <em>Sanctuary</em> habla de la rara y frágil experiencia de encontrar paz en otra persona. Joji describe a alguien que se convierte en su refugio del caos exterior (y quizás de su propio caos mental). A nivel sonoro, el uso de sintetizadores retro-futuristas hace que la canción se sienta como flotar en el espacio exterior, lejos del ruido, seguro dentro de un santuario emocional.</p>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- CALL TO ACTION: VOLVER AL INICIO -->
+<div class="cta-return">
+  <a href="index.html" class="btn-return">
+    <span>←</span> Regresar a la Discografía
+  </a>
+</div>
+
+<footer>
+  <p>Página creada con fines <span>académicos y educativos</span> · Joji / George Kusunoki Miller</p>
+</footer>
+
+<!-- BOTÓN VOLVER ARRIBA -->
+<button id="btn-top" title="Volver arriba">↑</button>
+
+<script>
+  // Lógica para Menú Sticky y Botón Volver Arriba
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    const btnTop = document.getElementById('btn-top');
+    
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+
+    if (window.scrollY > 400) {
+      btnTop.classList.add('show');
+    } else {
+      btnTop.classList.remove('show');
+    }
+  });
+
+  document.getElementById('btn-top').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>

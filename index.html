@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joji — Discografía & Historia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --gold:    #c9a84c;
+      --gold-lt: #e8cb7a;
+      --gold-bg: #f5e9c8;
+      --pale:    #ede0b5;
+      --ink:     #1a1a18;
+      --red:     #9e1b1b;
+      --red-lt:  #c42020;
+      --muted:   #8a7e5a;
+      --shadow:  rgba(26,26,24,0.14);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--gold-bg);
+      color: var(--ink);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 999; opacity: 0.45;
+    }
+
+    /* ── MENÚ DE NAVEGACIÓN ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(245, 233, 200, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 3rem;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+    .nav-logo {
+      font-family: 'Bodoni Moda', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .nav-logo:hover { color: var(--red); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--red); }
+    .nav-links a.highlight { font-weight: 700; color: var(--red); }
+
+    /* ── BOTÓN VOLVER ARRIBA ── */
+    #btn-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 45px;
+      height: 45px;
+      background: var(--red);
+      color: var(--gold-bg);
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(158,27,27,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #btn-top.show { opacity: 1; visibility: visible; }
+    #btn-top:hover { transform: translateY(-5px); background: var(--red-lt); }
+
+    /* ── ESTILOS ORIGINALES (Hero, Biografía, Timeline, etc.) ── */
+    .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; padding-top: 60px; }
+    .hero-left { background: var(--ink); display: flex; flex-direction: column; justify-content: flex-end; padding: 4rem 3rem; position: relative; }
+    .hero-left::after { content: ''; position: absolute; top: 0; right: -1px; bottom: 0; width: 2px; background: var(--red); }
+    .hero-tag { font-size: 0.62rem; letter-spacing: 0.3em; color: var(--red-lt); text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
+    .hero-name { font-family: 'Bodoni Moda', serif; font-size: clamp(4.5rem, 11vw, 9.5rem); font-weight: 700; color: var(--gold-bg); line-height: 0.88; letter-spacing: -0.02em; opacity: 0; animation: fadeUp 1s ease forwards 0.4s; }
+    .hero-name span { display: block; color: var(--red-lt); font-style: italic; }
+    .hero-sub { margin-top: 2rem; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.14em; line-height: 1.8; opacity: 0; animation: fadeUp 0.8s ease forwards 0.7s; }
+    .hero-right { background: var(--pale); display: flex; align-items: center; justify-content: center; position: relative; padding: 3rem; }
+    .hero-circle { width: min(370px, 80%); aspect-ratio: 1; border-radius: 50%; background: var(--ink); position: relative; overflow: hidden; box-shadow: 0 30px 80px var(--shadow); opacity: 0; animation: scaleIn 1s cubic-bezier(0.34,1.56,0.64,1) forwards 0.5s; }
+    .hero-circle::before { content: 'ジョージ'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Bodoni Moda', serif; font-size: 1.4rem; color: rgba(201,168,76,0.07); writing-mode: vertical-rl; letter-spacing: 0.3em; }
+    .hero-circle-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+    .big-year { font-family: 'Bodoni Moda', serif; font-size: clamp(3.5rem, 8vw, 6rem); color: var(--red-lt); font-weight: 700; letter-spacing: -0.05em; line-height: 1; }
+    .big-year-label { font-size: 0.58rem; letter-spacing: 0.25em; color: var(--gold-bg); text-transform: uppercase; }
+    .hero-dots { position: absolute; bottom: 2rem; right: 2rem; display: grid; grid-template-columns: repeat(5,6px); gap: 6px; }
+    .hero-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+    .hero-dots span:nth-child(1), .hero-dots span:nth-child(7), .hero-dots span:nth-child(13) { background: var(--red); }
+    .scroll-hint { position: absolute; bottom: 2.5rem; left: 3rem; display: flex; align-items: center; gap: 0.8rem; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; opacity: 0; animation: fadeUp 0.8s ease forwards 1.2s; }
+    .scroll-hint::before { content: ''; display: block; width: 38px; height: 1px; background: var(--red); }
+
+    section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+    .section-label { font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--red); display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--pale); }
+    h2 { font-family: 'Bodoni Moda', serif; font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2rem; }
+
+    .bio-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: start; }
+    .bio-text p { font-size: 0.82rem; line-height: 1.9; color: #3d3a28; margin-bottom: 1.2rem; }
+    .bio-text p strong { color: var(--ink); }
+    .bio-stats { display: flex; flex-direction: column; gap: 1.5rem; }
+    .stat-card { background: var(--ink); color: var(--gold-bg); padding: 1.5rem; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; bottom: 0; left: 0; width: 3px; height: 100%; background: var(--red); }
+    .stat-number { font-family: 'Bodoni Moda', serif; font-size: 2.4rem; font-weight: 700; line-height: 1; color: var(--red-lt); }
+    .stat-desc { font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
+
+    .timeline-section { background: var(--ink); }
+    .timeline-section .section-label { color: var(--red-lt); }
+    .timeline-section .section-label::after { background: rgba(158,27,27,0.18); }
+    .timeline-section h2 { color: var(--gold-bg); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--red), rgba(158,27,27,0.05)); }
+    .timeline-item { position: relative; margin-bottom: 0.5rem; }
+    .tl-trigger { width: 100%; background: none; border: none; cursor: pointer; text-align: left; padding: 1.1rem 1.2rem 1.1rem 2.5rem; position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border: 1px solid rgba(158,27,27,0.15); transition: background 0.25s ease, border-color 0.25s ease; }
+    .tl-trigger:hover { background: rgba(158,27,27,0.07); border-color: rgba(196,32,32,0.4); }
+    .tl-trigger.open  { background: rgba(158,27,27,0.1); border-color: var(--red-lt); border-bottom: none; }
+    .tl-trigger::before { content: ''; position: absolute; left: -0.3rem; top: 50%; transform: translateY(-50%); width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 3px rgba(158,27,27,0.25); transition: box-shadow 0.25s ease; }
+    .tl-trigger.open::before { box-shadow: 0 0 0 6px rgba(158,27,27,0.3); }
+    .tl-trigger-left { display: flex; flex-direction: column; gap: 0.2rem; }
+    .timeline-year { font-size: 0.58rem; letter-spacing: 0.22em; color: var(--red-lt); text-transform: uppercase; }
+    .timeline-title { font-family: 'Bodoni Moda', serif; font-size: 1.2rem; font-weight: 700; color: var(--gold-bg); line-height: 1.2; }
+    .tl-arrow { width: 1.6rem; height: 1.6rem; flex-shrink: 0; border: 1px solid rgba(196,32,32,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--red-lt); font-size: 0.7rem; transition: transform 0.35s ease, border-color 0.25s ease; }
+    .tl-trigger.open .tl-arrow { transform: rotate(180deg); border-color: var(--red-lt); }
+    .tl-body { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.48s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, padding 0.35s ease; padding: 0 1.2rem 0 2.5rem; border: 1px solid rgba(158,27,27,0.15); border-top: none; }
+    .tl-body.open { max-height: 600px; opacity: 1; padding: 1.5rem 1.2rem 2rem 2.5rem; }
+    .tl-body-inner { display: grid; grid-template-columns: 1fr 110px; gap: 1.8rem; align-items: start; }
+    .timeline-desc { font-size: 0.76rem; line-height: 1.85; color: rgba(245,233,200,0.6); }
+    .tl-thumb { flex-shrink: 0; border-radius: 4px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.55); border: 1px solid rgba(196,32,32,0.3); width: 110px; height: 110px; display: flex; flex-direction: column; }
+    .tl-thumb-label { font-size: 0.48rem; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; padding: 0.4rem 0.3rem; color: var(--red-lt); background: rgba(26,26,24,0.92); }
+
+    .albums-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 2px; margin-top: 1rem; }
+    .album-card { background: var(--pale); padding: 0; position: relative; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; }
+    .album-card:hover { transform: translateY(-5px); z-index: 1; box-shadow: 0 24px 60px var(--shadow); }
+    .album-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--red); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+    .album-card:hover::after { transform: scaleX(1); }
+    .album-cover { width: 100%; aspect-ratio: 1; overflow: hidden; position: relative; display: flex; }
+    .album-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(26,26,18,0.65) 100%); pointer-events: none; }
+    .album-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .album-year { font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .album-title { font-family: 'Bodoni Moda', serif; font-size: 1.7rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.8rem; }
+    .album-desc { font-size: 0.7rem; line-height: 1.8; color: #5a5240; margin-bottom: 1.2rem; flex: 1; }
+    .album-tracks { border-top: 1px solid var(--gold-bg); padding-top: 1rem; }
+    .album-tracks-label { font-size: 0.52rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--red); margin-bottom: 0.6rem; }
+    .track-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .track-list li { font-size: 0.7rem; color: var(--ink); display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; border-bottom: 1px solid rgba(26,26,24,0.06); }
+    .track-list li:last-child { border-bottom: none; }
+    .track-num { font-size: 0.52rem; color: var(--muted); width: 1.2rem; flex-shrink: 0; }
+    .track-highlight { color: var(--red); font-weight: 700; }
+    .album-tag { display: inline-block; font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; background: var(--ink); color: var(--gold); padding: 0.25rem 0.7rem; margin-top: 1rem; }
+    .album-card.dark { background: var(--ink); grid-column: 1 / -1; }
+    .album-card.dark .album-title { color: var(--gold-bg); }
+    .album-card.dark .album-year  { color: var(--muted); }
+    .album-card.dark .album-desc  { color: rgba(245,233,200,0.5); }
+    .album-card.dark .album-tracks { border-color: rgba(245,233,200,0.1); }
+    .album-card.dark .track-list li { color: var(--gold-bg); border-color: rgba(245,233,200,0.07); }
+    .album-card.dark .album-tag { background: var(--red); color: var(--gold-bg); }
+    .pitw-inner { display: grid; grid-template-columns: 260px 1fr; }
+
+    .songs-section { background: var(--ink); }
+    .songs-section .section-label { color: var(--red-lt); }
+    .songs-section .section-label::after { background: rgba(158,27,27,0.18); }
+    .songs-section h2 { color: var(--gold-bg); }
+    .songs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 1.5rem; margin-top: 1rem; }
+    .song-card { border: 1px solid rgba(158,27,27,0.2); padding: 1.8rem; transition: border-color 0.3s ease; }
+    .song-card:hover { border-color: var(--red-lt); }
+    .song-icon { width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; font-size: 0.85rem; color: var(--gold-bg); }
+    .song-name { font-family: 'Bodoni Moda', serif; font-size: 1.25rem; font-weight: 700; color: var(--gold-bg); margin-bottom: 0.35rem; }
+    .song-album { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red-lt); margin-bottom: 0.8rem; }
+    .song-desc { font-size: 0.7rem; line-height: 1.8; color: rgba(245,233,200,0.52); }
+    .song-stat { margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: var(--muted); display: flex; align-items: center; gap: 0.5rem; }
+    .song-stat::before { content: '◆'; color: var(--red); font-size: 0.38rem; }
+
+    .quote-wrap { text-align: center; padding: 6rem 2rem; max-width: 800px; margin: 0 auto; }
+    .quote-mark { font-family: 'Bodoni Moda', serif; font-size: 7rem; line-height: 0.5; color: var(--red); opacity: 0.35; display: block; margin-bottom: 1rem; }
+    .quote-text { font-family: 'Bodoni Moda', serif; font-style: italic; font-size: clamp(1.3rem, 2.8vw, 2rem); line-height: 1.45; color: var(--ink); margin-bottom: 1.4rem; }
+    .quote-attr { font-size: 0.62rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── CTA SECTION A LA NUEVA PÁGINA ── */
+    .cta-wrap { background: var(--ink); border-top: 1px solid rgba(245,233,200,0.1); text-align: center; padding: 5rem 2rem; }
+    .cta-wrap h2 { color: var(--gold-bg); margin-bottom: 1rem; }
+    .cta-desc { font-size: 0.85rem; color: rgba(245,233,200,0.6); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.8; }
+    .cta-btn { display: inline-block; padding: 1.2rem 3rem; background: var(--red); color: var(--gold-bg); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; transition: background 0.3s ease, transform 0.3s ease; border: 1px solid var(--red-lt); }
+    .cta-btn:hover { background: var(--red-lt); transform: translateY(-3px); }
+
+    footer { background: #111110; color: var(--muted); text-align: center; padding: 3rem 2rem; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; }
+    footer span { color: var(--red-lt); }
+
+    /* ── UPLOAD COMPONENT STYLES ── */
+    .upload-label { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 100%; cursor: pointer; background: #2a2a22; position: relative; overflow: hidden; text-align: center; padding: 1rem; border: 1px dashed rgba(201,168,76,0.3); transition: background 0.3s ease, border-color 0.3s ease; flex: 1; }
+    .upload-label:hover { background: #33332a; border-color: var(--gold); }
+    .upload-label input { display: none; }
+    .upload-placeholder { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--gold); }
+    .upload-placeholder span.icon { font-size: 1.8rem; line-height: 1; }
+    .upload-placeholder span.text { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .upload-label img.preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; display: none; transition: transform 0.4s ease; }
+    .album-card:hover .upload-label img.preview { transform: scale(1.05); }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scaleIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 80px; }
+      .hero-right { min-height: 50vh; }
+      .hero-left { padding: 3rem 1.5rem; }
+      .bio-grid { grid-template-columns: 1fr; gap: 2rem; }
+      section { padding: 3.5rem 1.5rem; }
+      .tl-body-inner { grid-template-columns: 1fr; }
+      .pitw-inner { grid-template-columns: 1fr; }
+      nav { padding: 1.5rem; flex-direction: column; gap: 1rem; }
+      .nav-links { display: none; /* En móvil podrías querer un botón hamburguesa, por ahora lo ocultamos para mantenerlo simple */ }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER FIJO / NAVEGACIÓN -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">JOJI.</a>
+  <div class="nav-links">
+    <a href="#bio">Biografía</a>
+    <a href="#trayectoria">Trayectoria</a>
+    <a href="#discografia">Discografía</a>
+    <!-- Enlace a la segunda página que crearemos -->
+    <a href="analisis.html" class="highlight">Análisis & Significado</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-left">
+    <p class="hero-tag">George Kusunoki Miller · 1992 · Osaka, Japón</p>
+    <h1 class="hero-name">Joji<span>ジョージ</span></h1>
+    <p class="hero-sub">R&B · Lo-Fi · Trip-Hop · Alternative Soul<br>Ex Filthy Frank · 88rising · Palace Creek</p>
+    <div class="scroll-hint">Explorar</div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-circle">
+      <div class="hero-circle-inner">
+        <div>
+          <div class="big-year">4</div>
+          <div class="big-year-label">Álbumes de Estudio</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-dots">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<section id="bio">
+  <p class="section-label">Biografía</p>
+  <h2>De YouTube<br>al Billboard</h2>
+  <div class="bio-grid">
+    <div class="bio-text">
+      <p><strong>George Kusunoki Miller</strong>, conocido artísticamente como <strong>Joji</strong>, nació en Osaka, Japón, en 1992, hijo de padre australiano y madre japonesa. Estudió en el Canadian Academy, un colegio internacional en Kobe, antes de mudarse a Estados Unidos para cursar la universidad.</p>
+      <p>Antes de convertirse en músico, ganó notoriedad global en YouTube bajo el nombre <strong>Filthy Frank</strong>, un personaje de comedia absurda y humor provocador que desencadenó fenómenos culturales como el <em>Harlem Shake</em> en 2013. Su canal llegó a decenas de millones de suscriptores y redefinió el humor de internet de la época.</p>
+      <p>En <strong>2017</strong>, Miller decidió poner fin al show —en parte por problemas de salud— y comenzó una transición radical hacia la música. Adoptó el nombre <strong>Joji</strong>, versión japonesa de su nombre, y publicó el EP <em>In Tongues</em>, una colección íntima de R&B lo-fi que anunciaba una nueva voz, melancólica y despojada.</p>
+      <p>Firmó con el sello <strong>88rising</strong>, conocido por proyectar artistas asiáticos al mercado global. En 2018 debutó con <em>Ballads 1</em>, que lo posicionó como el primer artista asiático en encabezar el chart de R&B de Billboard en Estados Unidos. Desde entonces, su música ha acumulado miles de millones de reproducciones globales.</p>
+      <p>En <strong>2025</strong>, tras tres años de silencio y habiendo lanzado su propio sello <em>Palace Creek</em>, Joji regresó con nueva música y su cuarto álbum, <em>Piss in the Wind</em>, lanzado el 6 de febrero de 2026.</p>
+    </div>
+    <div class="bio-stats">
+      <div class="stat-card"><div class="stat-number">#1</div><div class="stat-desc">Primer artista asiático en encabezar el chart R&B de Billboard USA</div></div>
+      <div class="stat-card"><div class="stat-number">#8</div><div class="stat-desc">"Glimpse of Us" en Billboard Hot 100 — su mayor éxito</div></div>
+      <div class="stat-card"><div class="stat-number">2011</div><div class="stat-desc">Inicio en YouTube como Filthy Frank</div></div>
+      <div class="stat-card"><div class="stat-number">4</div><div class="stat-desc">Álbumes de estudio como Joji (2018–2026)</div></div>
+    </div>
+  </div>
+</section>
+
+<div id="trayectoria" class="timeline-section">
+  <section>
+    <p class="section-label">Trayectoria</p>
+    <h2>Historia en el Tiempo</h2>
+    <p style="font-size:0.7rem;color:rgba(245,233,200,0.35);margin-bottom:2.2rem;margin-top:-1.2rem;letter-spacing:0.1em;">
+      Haz clic en cada etapa para desplegar los detalles
+    </p>
+
+    <div class="timeline">
+      <!-- ITEM 1: Filthy Frank -->
+      <div class="timeline-item">
+        <button class="tl-trigger" onclick="toggleTL(this)">
+          <div class="tl-trigger-left"><span class="timeline-year">2011 – 2017</span><span class="timeline-title">Era Filthy Frank</span></div><span class="tl-arrow">▼</span>
+        </button>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <p class="timeline-desc">George Miller crea <em>The Filthy Frank Show</em> en YouTube, acumulando millones de seguidores con humor absurdo. En 2013 lanza el video que dispara el fenómeno viral del <em>Harlem Shake</em>. Como alter ego "Pink Guy" lanza el mixtape <em>Pink Guy</em> (2014) y el álbum <em>Pink Season</em> (2017).</p>
+            <div class="tl-thumb">
+              <!-- Enlace a YouTube con miniatura directa de un video de Filthy Frank -->
+              <a href="https://www.youtube.com/results?search_query=filthy+frank" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+                <img src="https://imgs.search.brave.com/BzpxZ87e-RcajdJLn1daQbUHDFqwLFhmHjn2LqFIgAo/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9yb2xs/aW5nc3RvbmUuY29t/LmJyL3dwLWNvbnRl/bnQvdXBsb2Fkcy9m/aWx0aHktZnJhbmst/cGluay1ndXktam9q/aS1jYW5jZWxhZG8t/cmVwcm9kdWNhby5q/cGc" alt="Filthy Frank" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div class="tl-thumb-label">Filthy Frank Era</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 2: In Tongues -->
+      <div class="timeline-item">
+        <button class="tl-trigger" onclick="toggleTL(this)">
+          <div class="tl-trigger-left"><span class="timeline-year">Noviembre 2017</span><span class="timeline-title">In Tongues EP — El Nacimiento de Joji</span></div><span class="tl-arrow">▼</span>
+        </button>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <p class="timeline-desc">Miller anuncia el fin del show y lanza <em>In Tongues</em>, su primer trabajo serio como Joji. El EP introduce una identidad radicalmente nueva: R&B lo-fi, voz etérea, letras introspectivas. Canciones como "Will He" y "Demons" anticipan lo que vendrá.</p>
+            <div class="tl-thumb">
+              <a href="https://www.youtube.com/results?search_query=joji+in+tongues" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+                <img src="https://imgs.search.brave.com/8EiWCH23n604bZPysbbWJHYgBQGAYSmNaLjwjKT_7rs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFQNnI0dDNGOUwu/anBn" alt="In Tongues" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div class="tl-thumb-label">In Tongues · 2017</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 3: Ballads 1 -->
+      <div class="timeline-item">
+        <button class="tl-trigger" onclick="toggleTL(this)">
+          <div class="tl-trigger-left"><span class="timeline-year">Octubre 2018</span><span class="timeline-title">Ballads 1 — Debut Histórico</span></div><span class="tl-arrow">▼</span>
+        </button>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <p class="timeline-desc">Su primer álbum completo bajo 88rising debuta como #1 en el chart R&B/Hip-Hop de Billboard, hito histórico para un artista asiático. "Slow Dancing in the Dark" se convierte en su canción más emblemática del periodo, acumulando cientos de millones de reproducciones.</p>
+            <div class="tl-thumb">
+              <a href="https://www.youtube.com/results?search_query=joji+ballads+1" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+                <img src="https://imgs.search.brave.com/gRyx-FPeVEtSGMBh7BBPnYc9jWIgP5RpZvWMOBBc0kY/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly90aGVn/YXRld2F5b25saW5l/LmNhL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDE4LzEwL0pvamkt/QmFsbGFkcy03ODB4/NDA1LmpwZw" alt="Ballads 1" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div class="tl-thumb-label">Ballads 1 · 2018</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 4: Nectar -->
+      <div class="timeline-item">
+        <button class="tl-trigger" onclick="toggleTL(this)">
+          <div class="tl-trigger-left"><span class="timeline-year">Septiembre 2020</span><span class="timeline-title">Nectar — Evolución Sónica</span></div><span class="tl-arrow">▼</span>
+        </button>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <p class="timeline-desc">Con colaboraciones de Diplo, Omar Apollo, Lil Yachty y otros, Joji amplía su paleta sonora incorporando sintetizadores, pop alternativo y cuerdas orquestales. "Sanctuary" y "Gimme Love" se convierten en himnos virales en TikTok. Alcanza el #3 en el Billboard 200.</p>
+            <div class="tl-thumb">
+              <a href="https://www.youtube.com/results?search_query=joji+nectar" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+                <img src="https://imgs.search.brave.com/C5IL_6EbGBbf5fzDMQmhISOUhwZA8knB6ypkKAF9GFA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL2lt/YWdlcy9nL0UwZ0FB/T1N3c3NaaHJ1eFAv/cy1sNTAwLmpwZw" alt="Nectar" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div class="tl-thumb-label">Nectar · 2020</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 5: Smithereens -->
+      <div class="timeline-item">
+        <button class="tl-trigger" onclick="toggleTL(this)">
+          <div class="tl-trigger-left"><span class="timeline-year">Noviembre 2022</span><span class="timeline-title">Smithereens — La Cima Comercial</span></div><span class="tl-arrow">▼</span>
+        </button>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <p class="timeline-desc">"Glimpse of Us" llega al #8 del Billboard Hot 100 y al #1 en Australia. El álbum está dividido en dos caras temáticas sobre el desamor: la Side A busca reconciliarse con el pasado amoroso, mientras la Side B retrata las consecuencias de ese intento fallido.</p>
+            <div class="tl-thumb">
+              <a href="https://www.youtube.com/results?search_query=joji+smithereens" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+                <img src="https://imgs.search.brave.com/xPgqTZUcoDGcgqsHeKrXEPZ7uTnGCsQfWqENlsN1BA8/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/ODEtSjdUNnlZdUwu/anBn" alt="Smithereens" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div class="tl-thumb-label">Smithereens · 2022</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 6: Piss in the Wind -->
+      <div class="timeline-item">
+        <button class="tl-trigger" onclick="toggleTL(this)">
+          <div class="tl-trigger-left"><span class="timeline-year">Oct. 2025 – Feb. 2026</span><span class="timeline-title">Piss in the Wind — Regreso e Independencia</span></div><span class="tl-arrow">▼</span>
+        </button>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <p class="timeline-desc">Tras tres años de silencio, Joji regresa con su sello propio <em>Palace Creek</em>. El álbum, con colaboraciones de Giveon, 4Batz, Yeat y Don Toliver, se lanza el 6 de febrero de 2026. Joji utilizó un doble en entrevistas y videos durante toda la campaña.</p>
+            <div class="tl-thumb">
+              <a href="https://www.youtube.com/results?search_query=joji+piss+in+the+wind" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+                <img src="https://imgs.search.brave.com/dmjP8KRp4iaLv6SlEKHSXwsjy-RN_cW9E0omdIMEFIk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9kaWdn/ZXJzLXB1YmxpYy5z/My5ldS13ZXN0LTMu/YW1hem9uYXdzLmNv/bS9wcm9qZWN0cy83/ZWVkNGRkNi00MWQ2/LTRjMjUtYWJmZC1h/MzIyNTcyYzVmZWYv/cHJldmlldy5wbmc" alt="Piss in the Wind" style="width: 100%; height: 100%; object-fit: cover; filter: grayscale(50%) contrast(1.2); transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div class="tl-thumb-label">Piss in the Wind · 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section id="discografia">
+  <p class="section-label">Discografía</p>
+  <h2>Álbumes & EP</h2>
+  <div class="albums-grid">
+
+    <div class="album-card">
+      <div class="album-cover">
+      <a href="https://www.youtube.com/results?search_query=joji+in+tongues+full+album" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+        <img src="https://imgs.search.brave.com/umh2cGIkKJbRCIxm0FEwrokjXCvMgyEnhdcn4PHek30/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmRp/c2NvZ3MuY29tL3dh/dlJBd05sVlFyaGla/LWlBbWhXWUNVcHFC/V2M0TXdvcG9zWkJC/eGg4b1UvcnM6Zml0/L2c6c20vcTo0MC9o/OjMwMC93OjMwMC9j/ek02THk5a2FYTmpi/MmR6L0xXUmhkR0Zp/WVhObExXbHQvWVdk/bGN5OVNMVEkxT0RZ/Mi9NRGswTFRFMk56/UTFNVGt4L016SXRO/emsyTWk1cWNHVm4u/anBlZw" alt="In Tongues" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+      </a>
+        <div class="album-cover-overlay"></div>
+      </div>
+      <div class="album-body">
+        <div class="album-year">2017</div>
+        <div class="album-title">In Tongues</div>
+        <div class="album-desc">EP debut que marcó la transición de Filthy Frank a Joji. Sonido lo-fi íntimo que estableció su nueva estética emocional.</div>
+        <div class="album-tracks">
+          <div class="album-tracks-label">Canciones clave</div>
+          <ul class="track-list">
+            <li><span class="track-num">01</span><span class="track-highlight">Will He</span></li>
+            <li><span class="track-num">02</span>Demons</li>
+            <li><span class="track-num">03</span>Worldstar Money</li>
+          </ul>
+        </div>
+        <div class="album-tag">EP · CXSHXNLY</div>
+      </div>
+    </div>
+
+    <div class="album-card">
+      <div class="album-cover">
+      <a href="https://www.youtube.com/results?search_query=joji+ballads+1+full+album" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+        <img src="https://imgs.search.brave.com/EH-3l8hiqSxKRf1ZhVsLhQ5rSmW1p00SARYLpcUBKjs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmRp/c2NvZ3MuY29tL0Qt/S3ZGQnYtMzBLd1V5/Tm9raFcxajdtUHRC/bTMydFZ6b2Z5ME9C/VnJXMDAvcnM6Zml0/L2c6c20vcTo0MC9o/OjMwMC93OjMwMC9j/ek02THk5a2FYTmpi/MmR6L0xXUmhkR0Zp/WVhObExXbHQvWVdk/bGN5OVNMVEl4T1RF/My9NekV4TFRFMk5E/TTBPVE13L05qRXRO/elU0TkM1cWNHVm4u/anBlZw" alt="Ballads 1" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+      </a>
+        <div class="album-cover-overlay"></div>
+      </div>
+      <div class="album-body">
+        <div class="album-year">2018</div>
+        <div class="album-title">Ballads 1</div>
+        <div class="album-desc">Debut álbum. Primer artista asiático en #1 del chart R&B de Billboard. Piano soñoliento y falsetto íntimo definen su identidad.</div>
+        <div class="album-tracks">
+          <div class="album-tracks-label">Canciones clave</div>
+          <ul class="track-list">
+            <li><span class="track-num">01</span><span class="track-highlight">Slow Dancing in the Dark</span></li>
+            <li><span class="track-num">02</span>Yeah Right</li>
+            <li><span class="track-num">03</span>Can't Get Over You</li>
+          </ul>
+        </div>
+        <div class="album-tag">#1 R&B Billboard</div>
+      </div>
+    </div>
+
+    <div class="album-card">
+      <div class="album-cover">
+      <a href="https://www.youtube.com/results?search_query=joji+nectar+full+album" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+        <img src="https://upload.wikimedia.org/wikipedia/en/1/1b/Joji_-_Nectar.png" alt="Nectar" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+      </a>
+        <div class="album-cover-overlay"></div>
+      </div>
+      <div class="album-body">
+        <div class="album-year">2020</div>
+        <div class="album-title">Nectar</div>
+        <div class="album-desc">Su obra más rica sonoramente: colaboraciones internacionales, cuerdas orquestales y pop alternativo. Alcanzó el #3 en el Billboard 200.</div>
+        <div class="album-tracks">
+          <div class="album-tracks-label">Canciones clave</div>
+          <ul class="track-list">
+            <li><span class="track-num">01</span><span class="track-highlight">Sanctuary</span></li>
+            <li><span class="track-num">02</span><span class="track-highlight">Gimme Love</span></li>
+            <li><span class="track-num">03</span>Run</li>
+          </ul>
+        </div>
+        <div class="album-tag">#3 Billboard 200</div>
+      </div>
+    </div>
+
+    <div class="album-card">
+      <div class="album-cover">
+      <a href="https://www.youtube.com/results?search_query=joji+smithereens+full+album" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+        <img src="https://imgs.search.brave.com/3-qpKuKyZTDo8XvPZ9IvGz2fwsFYz6u_lPhxdFSprSs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuY29tcGxleC5j/b20vY29tcGxleC9p/bWFnZS91cGxvYWQv/cV9hdXRvLGZfYXV0/byxjX2ZpbGwsYXJf/MS4wMCx3XzIwNDgs/Z19hdXRvL3YxNzIz/ODQxNzE4L3Nhbml0/eS1uZXcvam9qaS1z/bWl0aGVyZWVucy1z/dHJlYW0tMTM0MDM2/MzMxLnBuZw" alt="Smithereens" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+      </a>
+        <div class="album-cover-overlay"></div>
+      </div>
+      <div class="album-body">
+        <div class="album-year">2022</div>
+        <div class="album-title">Smithereens</div>
+        <div class="album-desc">Dos caras temáticas sobre el desamor. Minimalista y cinematográfico. "Glimpse of Us" al #8 del Hot 100 y #1 en Australia.</div>
+        <div class="album-tracks">
+          <div class="album-tracks-label">Canciones clave</div>
+          <ul class="track-list">
+            <li><span class="track-num">01</span><span class="track-highlight">Glimpse of Us</span></li>
+            <li><span class="track-num">02</span>Feeling Like the End</li>
+            <li><span class="track-num">03</span>Die for You</li>
+          </ul>
+        </div>
+        <div class="album-tag">#8 Hot 100</div>
+      </div>
+    </div>
+
+    <div class="album-card dark">
+      <div class="pitw-inner">
+        <div class="album-cover" style="aspect-ratio:1;max-height:280px;">
+          <a href="https://www.youtube.com/results?search_query=joji+piss+in+the+wind" target="_blank" style="display: block; width: 100%; height: 100%; overflow: hidden;">
+            <img src="https://imgs.search.brave.com/NZjcp5vPX8JGYrWeBtjdK8cQ7TsPOFZjJAsDStH7slI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvZW4vdGh1bWIv/Ny83Zi9Kb2ppXy1f/UGlzc19pbl90aGVf/V2luZC5qcGcvMjUw/cHgtSm9qaV8tX1Bp/c3NfaW5fdGhlX1dp/bmQuanBn" alt="Piss in the Wind" style="width: 100%; height: 100%; object-fit: cover; filter: grayscale(50%) contrast(1.2); transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+          </a>
+          <div class="album-cover-overlay"></div>
+        </div>
+        <div class="album-body">
+          <div class="album-year">2026 · Palace Creek / Virgin Music Group</div>
+          <div class="album-title">Piss in the Wind</div>
+          <div class="album-desc">Su cuarto álbum y el primero como artista independiente. Combina su pasado lo-fi con producción cinematográfica y gritty. Colaboraciones con Giveon, Yeat, 4Batz y Don Toliver. Durante la campaña utilizó un doble —el actor Robert Birdsall— en entrevistas y videos.</div>
+          <div class="album-tracks">
+            <div class="album-tracks-label">Canciones clave</div>
+            <ul class="track-list">
+              <li><span class="track-num">01</span><span class="track-highlight">Pixelated Kisses</span></li>
+              <li><span class="track-num">02</span><span class="track-highlight">If It Only Gets Better</span></li>
+              <li><span class="track-num">03</span>Past Won't Leave My Bed</li>
+            </ul>
+          </div>
+          <div class="album-tag">Palace Creek — Independiente · 2026</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="quote-wrap">
+  <span class="quote-mark">"</span>
+  <p class="quote-text">Su música vive en ese espacio liminal entre la nostalgia y el duelo, donde los sentimientos existen antes de que tengan nombre.</p>
+  <p class="quote-attr">Sobre el universo sonoro de Joji</p>
+</div>
+
+<!-- NUEVA SECCIÓN: CALL TO ACTION HACIA LA SEGUNDA PÁGINA -->
+<div class="cta-wrap">
+  <h2>Más allá del Álbum</h2>
+  <p class="cta-desc">¿Cómo pasó de ser la figura más controversial de internet a llenar arenas cantando sobre el desamor? Sumérgete en la historia detrás de su transición y el significado oculto de sus canciones más importantes.</p>
+  <a href="analisis.html" class="cta-btn">Descubrir el Análisis</a>
+</div>
+
+<footer>
+  <p>Página creada con fines <span>académicos y educativos</span> · Joji / George Kusunoki Miller · 1992 – Presente</p>
+  <p style="margin-top:0.6rem;opacity:0.35;">88rising · Palace Creek · Virgin Music Group</p>
+</footer>
+
+<!-- BOTÓN VOLVER ARRIBA -->
+<button id="btn-top" title="Volver arriba">↑</button>
+
+<script>
+  // Acordeón de la línea de tiempo
+  function toggleTL(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.tl-trigger').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.tl-body').forEach(b => b.classList.remove('open'));
+    if (!isOpen) {
+      btn.classList.add('open');
+      body.classList.add('open');
+      setTimeout(() => body.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+    }
+  }
+
+  // Lógica para previsualizar imágenes
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const label = event.target.closest('.upload-label');
+        const img = label.querySelector('.preview');
+        const placeholder = label.querySelector('.upload-placeholder');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+        label.style.border = 'none';
+      }
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Lógica para Menú Sticky y Botón Volver Arriba
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    const btnTop = document.getElementById('btn-top');
+    
+    // Cambiar estilo del menú al hacer scroll
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+
+    // Mostrar/ocultar el botón de volver arriba
+    if (window.scrollY > 400) {
+      btnTop.classList.add('show');
+    } else {
+      btnTop.classList.remove('show');
+    }
+  });
+
+  // Funcionalidad del botón Volver Arriba
+  document.getElementById('btn-top').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
